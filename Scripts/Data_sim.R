@@ -1,7 +1,8 @@
 ### Simulate reproductive success data for analysis using conventional and Bayesian aster models
-#devtools::install_github("crushing05/crushingr")  
-require(crushingr)
+require(ggplot2) 
+require(dplyr)
 source("R/rpoisson0.R")
+source("R/invlogit.R")
 
 ### Set parameters ----
 ### Number of nests to simulate
@@ -143,5 +144,6 @@ nest_success <- function(nPlots = n_plots, nNests = n_nests,
     #filter(C.para == 1) %>%
     ggplot(., aes(x = C.bhco.hatch, y = C.woth.fledge)) + geom_point(alpha = 0.5) +
       #stat_smooth(method = "glm", method.args = list(family = "binomial"))
-      stat_smooth(method = "glm", method.args = list(family = "poisson"))
+      stat_smooth(method = "glm", method.args = list(family = "poisson")) +
+    theme_bw()
 

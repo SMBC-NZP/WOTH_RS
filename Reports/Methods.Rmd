@@ -1,0 +1,80 @@
+---
+title: "Methods"
+output: pdf_document
+---
+
+```{r echo = FALSE}
+nPlots <- 12
+nNests <- 40
+season.length <- 30
+```
+
+### Data simulations
+
+We used simulated data to test the ability of our model to estimate the ...  
+
+We simulated Wood Thrush and Cowbird reproductive success data for `r nNests` nests on `r nPlots` study plots (total nests = `r nPlots*nNests`). We randomly assigned each nest $i$ a clutch completion date ($CC_i$) and distance to patch edge ($dist_i$) as:
+
+$$CC_i \sim Uniform(0, `r season.length`)$$
+
+$$dist_i \sim Uniform(0, 100)$$
+
+For each plot $p$, we simulated Cowbird density ($dens_p$) as:
+
+$$dens_p \sim Uniform(0, 20)$$
+
+The probability that each nest was parasitized by a Brown-headed Cowbird ($\phi^P_{i,p}$) was modeled as a function of the mean parasitism rate ($\alpha^P$), clutch completion date, the distance of the nest from the plot edge ($dist_i$), and the density of Cowbirds on the plot ($dens_p$):
+$$\phi^P_{i,p} = \alpha^p + \beta^2 CC_i + \beta^3 dist_i + \beta^4 dens_p$$
+
+Observed parasitism of each nest ($P_{i,p}$) was then modeled as the outcome of a Bernoulli trial with probability $\phi^P_{i,p}$.  
+
+The probability of cowbird hatching success ($\phi^{CH}_{i,p}$) was modeled as a constant ($\alpha^{CH}$), conditional on the nest being parasitized. Thus,
+
+\begin{equation}
+  \phi^{CH}_{i,p}=\begin{cases}
+    \alpha^{CH}, & \text{if $P_{i,p} = 1$}.\\
+    0, & \text{if $P_{i,p} = 0$}.
+  \end{cases}
+\end{equation}
+
+
+The observed Cowbird hatching success ($HC_{i,p}$) was treated as a Bernoulli trial with probability $\phi^{CH}_{i,p}$.  
+
+The expected probability of Wood Thrush hatching success ($\phi^{WH}_{i,p}$) was modeled as a function of whether or not Cowbirds nestlings were present in the nest:
+$$\phi^{WH}_{i,p} = \alpha^{WH} + \beta^5 HC_{i,p}$$
+
+where $\alpha^{WH}$ the mean hatching success rate for Wood Thrush and $\beta^5$ is the slope parameter controlling the effect of Cowbird hatching success on Wood Thrush hatching success. The observed Wood Thrush hatching success ($WH_{i,p}$) was then modeled as a Bernoulli trial with probability $\phi^{WH}_{i,p}$.  
+
+
+Next, the number of Cowbird fledglings in each nest ($CF_{i,p}$) was drawn from a zero-truncated Poisson distribution with mean $\lambda^{CF}_{i,p}$, conditional on Cowbird hatching success:
+
+\begin{equation}
+  CF_{i,p}=\begin{cases}
+    \sim Poisson(\lambda^{CF}_{i,p})T(1,), & \text{if $CH_{i,p} = 1$}.\\
+    0, & \text{if $CH_{i,p} = 0$}.
+  \end{cases}
+\end{equation}
+
+The expected number of Cowbird offspring in each nest ($\lambda^{CF}_{i,p}$) was modeled a function of Wood Thrush hatching success: 
+
+$$\lambda^{CF}_{i,p} = \mu^{CF} + \beta^6 HW_{i,p}$$ 
+
+where $\mu^{CF}$ is the mean number of Cowbird fledglings per nest and $\beta^6$ is the slope parameter controlling the effect of Wood Thrush hatching success on Cowbird offspring.  
+
+Finally, the number of Wood Thrush fledglings in each nest ($WF_{i,p}$) was drawn from a zero-truncated Poisson distribution with mean $\lambda^{WF}_{i,p}$, conditional on Wood Thrush hatching success:
+
+\begin{equation}
+  WF_{i,p}=\begin{cases}
+    \sim Poisson(\lambda^{WT}_{i})T(1,), & \text{if $WH_{i,p} = 1$}.\\
+    0, & \text{if $WH_{i,p} = 0$}.
+  \end{cases}
+\end{equation}
+
+The expected number of Wood Thrush offspring in each nest ($\lambda^{CF}_{i}$) was modeled a function of the number of Cowbird offpsring in the nest: 
+
+$$\lambda^{WF}_{i,p} = \mu^{WF} + \beta^7 CF_{i,p}$$ 
+
+where $\mu^{WF}$ is the mean number of Cowbird fledglings per nest and $\beta^7$ is the slope parameter controlling the effect of Cowbird offspring on Wood Thrush offspring.  
+
+
+
